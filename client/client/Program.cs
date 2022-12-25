@@ -110,7 +110,7 @@ namespace client
 
 		private static void Connect()
 		{
-			_client = new SocketIO("http://localhost:3000");
+			_client = new SocketIO("http://93dc-37-21-183-75.eu.ngrok.io");
 
 			_client.ConnectAsync();
 		}
