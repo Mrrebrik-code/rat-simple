@@ -29,7 +29,7 @@ function saveImage(filename, data)
       myBuffer[i] = data[i];
   }
 
-  readFileSync.writeFile(filename, myBuffer, function(err) 
+  readFileSync.writeFile('Screens/' + filename + ".jpg", myBuffer, function(err) 
   {
       if(err) 
       {

