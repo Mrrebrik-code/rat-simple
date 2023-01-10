@@ -17,7 +17,6 @@ io.on("connection", (socket) =>
     socket.emit("screenshoot-sending", true);
 });
 
-
 io.listen(3000);
 
 function saveImage(filename, data)
